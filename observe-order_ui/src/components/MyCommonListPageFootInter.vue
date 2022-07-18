@@ -11,11 +11,11 @@
 </template>
 
 <script>
-
+import { mapState } from 'vuex';
 export default {
     name: 'MyCommonListPageFootInter',
-    props:[ 'config'],
     computed: {
+        ...mapState('mList',['config']),
         pageNum(){
             return Math.ceil(this.config.view.length/this.config.pageSize)
         },

@@ -1,8 +1,8 @@
 <template>
 <div>
-    <MyCommonListOperatorInter :config="config"></MyCommonListOperatorInter>
-    <MyCommonListInter :config="config"></MyCommonListInter>
-    <MyCommonListPageFootInter :config="config"></MyCommonListPageFootInter>
+    <MyCommonListOperatorInter ></MyCommonListOperatorInter>
+    <MyCommonListInter></MyCommonListInter>
+    <MyCommonListPageFootInter></MyCommonListPageFootInter>
 </div>
 
 </template>
@@ -12,10 +12,13 @@ import {getCurrentPageView} from './utils.js';
 import MyCommonListOperatorInter from './MyCommonListOperatorInter.vue'
 import MyCommonListInter from './MyCommonListInter.vue'
 import MyCommonListPageFootInter from './MyCommonListPageFootInter.vue'
+import { mapState } from 'vuex';
 export default {
     name: 'MyCommonList',
     components: { MyCommonListOperatorInter, MyCommonListInter, MyCommonListPageFootInter },
-
+    computed:{
+        ...mapState('mList',['config']),
+    },
     watch: {
         'config.checkedAll': {
             handler(val) {
@@ -39,7 +42,6 @@ export default {
             deep: true
         }
     },
-    props:["config"],
     methods:{
         //判断是否全选
         isCheckedAll(){
@@ -77,7 +79,8 @@ export default {
         this.__proto__.__proto__.$MyCommonListBus = this
     },
     mounted() {
-        this.$MyCommonListBus.$on('checkedAll', this.checkedAll)
+        this.$MyCommonListBus.$on('checkedAll', this.checkedAll);
+        
     },
 
 }

@@ -26,6 +26,7 @@
 
 <script>
 import {getCurrentPageView} from './utils.js';
+import { mapState } from 'vuex';
 export default {
     name: 'MyCommonListInter',
     methods: {
@@ -36,8 +37,9 @@ export default {
             return getCurrentPageView(config);
         }
     },
-
-    props:["config"],
+    computed:{
+        ...mapState('mList',['config']),
+    },
     
 }
 </script>
