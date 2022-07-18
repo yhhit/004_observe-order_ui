@@ -1,6 +1,5 @@
 <template>
   <div>
-  <h1>MyCommonListOperatorInter</h1>
     <!-- select all checkbox -->
     <span class="checkbox">
       <label>
@@ -10,7 +9,7 @@
     </span>
     <!-- add button and delete button-->
     <span class="form-group">
-      <button type="button" v-for="b,index in config.lPButton" :key="index" @click="handleButton(b.title)">{{b.title}}</button>
+      <el-button type="primary" size="mini" v-for="b,index in config.lPButton" :key="index" @click="handleButton(b.title)">{{b.title}}</el-button>
     </span>
   </div>
 </template>

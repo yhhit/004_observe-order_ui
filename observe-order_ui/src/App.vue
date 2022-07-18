@@ -42,7 +42,54 @@ export default {
                   },//checked required
                   {
                       title:"name",
-                      content:"yhh",
+                      content:"yhh1",
+                      type:"String"
+                  },
+                  {
+                      title:"age",
+                      content:22,
+                      type:"Number"
+                  },
+              ]
+              ,
+               [
+                  {
+                      title:"id",
+                      content:2,
+                      type:"String"
+
+                  },//id required
+                  {
+                    title:"checked",
+                    content:false,
+                    type:"Boolean"
+                  },//checked required
+                  {
+                      title:"name",
+                      content:"yhh2",
+                      type:"String"
+                  },
+                  {
+                      title:"age",
+                      content:22,
+                      type:"Number"
+                  },
+              ]
+              , [
+                  {
+                      title:"id",
+                      content:3,
+                      type:"String"
+
+                  },//id required
+                  {
+                    title:"checked",
+                    content:false,
+                    type:"Boolean"
+                  },//checked required
+                  {
+                      title:"name",
+                      content:"yhh3",
                       type:"String"
                   },
                   {
@@ -55,7 +102,7 @@ export default {
               [
                   {
                       title:"id",
-                      content:2,
+                      content:4,
                       type:"String"
 
                   },//id required
@@ -92,7 +139,7 @@ export default {
                   title:"delete"
               }
           ],
-          pageSize:1,
+          pageSize:2,
           currentPage:1,
           handleLIButton:function(title,id){
               console.log(id,title);

@@ -1,10 +1,12 @@
 <template>
   <div>
-    <span @click="handleStartPage()">&lt;&lt;</span>
-    <span @click="handlePrePage()">&lt;</span>
-    <span v-for="p in pageNum" :key="p" @click="config.currentPage=p">{{p}}</span>
-    <span @click="handleNextPage()">&gt;</span>
-    <span @click="handleEndPage()">&gt;&gt;</span>
+    <el-button-group>
+        <el-button type="primary" icon="el-icon-d-arrow-left" @click="handleStartPage()"></el-button>
+        <el-button type="primary" icon="el-icon-arrow-left" @click="handlePrePage()">上一页</el-button>
+        <el-button type="primary" v-for="p in pageNum" :key="p" @click="config.currentPage=p">{{p}}</el-button>
+        <el-button type="primary" @click="handleNextPage()">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+        <el-button type="primary" @click="handleEndPage()"><i class="el-icon-d-arrow-right"></i></el-button>
+    </el-button-group>
   </div>
 </template>
 
