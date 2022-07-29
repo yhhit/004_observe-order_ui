@@ -2,28 +2,25 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
-const mList = {
-    namespaced: true,
-    state: {
-        config:{}
-        
-    },
-    actions: {
-    },
-    mutations: {
-        SET_CONFIG(state, config) {
-            state.config = config
-        }
-    }
-}
-
 const mConfig={
     namespaced: true,
     state: {
         packageJson: {},
-        navigator:""
+        navigator:"",
+        userInfo:{},
+        token:"",
     },
     actions: {
+        //设置用户登陆信息而非session信息
+        setUserSession({commit},data){
+            commit("SET_USER_INFO",data.userInfo)
+            localStorage.setItem("token",data.token)
+        },
+        clearUserSession({commit}){
+            commit("SET_USER_INFO",{})
+            localStorage.setItem("token","")
+        }
+
     },
     mutations: {
         SET_CONFIG(state, packageJson) {
@@ -31,7 +28,14 @@ const mConfig={
         },
         SET_NAVIGATOR(state, navigator) {
             state.navigator = navigator
+        },
+        SET_USER_INFO(state, userInfo) {
+            state.userInfo = userInfo
+        },
+        SET_TOKEN(state, token) {
+            state.token = token
         }
+
     }
 }
 
@@ -39,7 +43,6 @@ const mConfig={
 
 export default new Vuex.Store({
     modules: {
-        mList,
         mConfig
     }
 })

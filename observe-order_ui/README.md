@@ -31,8 +31,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 #TODO
 
-- [x] 添加自动判断路径激活导航栏按钮
-- [x] 修改密码登出按钮
+- [x] 添加自动判断路径激活导航栏按钮(bug)
 - [ ] Create/Delete User/Change Password
 - [ ] 模块详情静态资源
   - [ ] 权限控制

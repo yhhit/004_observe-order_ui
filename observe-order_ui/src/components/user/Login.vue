@@ -34,6 +34,7 @@
           >Login</el-button>
         </el-form-item>
         <!-- <a class="forgot-password" href="/">Forgot password ?</a> -->
+        <router-link class="forgot-password" to="/users/post">Register</router-link>
       </el-form>
     </el-card>
   </div>
@@ -51,16 +52,18 @@
 </template>
 
 <script>
+import axios from 'axios';
+import {loginUrl} from "../const/api.js"
 export default {
   name: "Login-component",
   mounted: function() {
   },
   data() {
     return {
-      validCredentials: {
-        username: "lightscope",
-        password: "lightscope",
-      },
+      // validCredentials: {
+      //   username: "lightscope",
+      //   password: "lightscope",
+      // },
       model: {
         username: "",
         password: "",
@@ -100,27 +103,39 @@ export default {
   },
   methods: {
     
-    simulateLogin() {
-      return new Promise((resolve) => {
-        setTimeout(resolve, 800);
-      });
+    handleLogin() {
+      let self = this;
+      this.loading = true;
+      return axios.post(loginUrl).then(res => {
+          if( res.data.code===0){
+            this.$store.dispatch('mConfig/setUserSession', res.data.data);
+            this.$message.success("Login successfull");
+            setTimeout(() => {
+              this.$router.push('/');
+            }, 1000);
+          }else{
+            this.$message.error("Login failed, "+(res.data.err||"network error!"));
+          }
+          
+        }).catch(function (error) {
+          // handle error
+          console.log(error);
+          self.$message.error("Login failed:"+error);
+        })
+        .then(function () {
+          // always executed
+          self.loading = false;
+        });
     },
     async login() {
       let valid = await this.$refs.form.validate();
       if (!valid) {
         return;
       }
-      this.loading = true;
-      await this.simulateLogin();
-      this.loading = false;
-      if (
-        this.model.username === this.validCredentials.username &&
-        this.model.password === this.validCredentials.password
-      ) {
-        this.$message.success("Login successfull");
-      } else {
-        this.$message.error("Username or password is invalid");
-      }
+      this.handleLogin().catch(err => {
+        console.log(err);
+      });
+      
     },
   },
 };
@@ -141,7 +156,7 @@ body {
   margin: 0;
   padding: 0;
   background: #102a43;
-  background-image: url("https://uploads.codesandbox.io/uploads/user/c3fb8e8a-35ea-4232-b5d6-0f3c5373510b/LVs7-dots.png");
+  background-image: url("../../assets/img/LVs7-dots.png");
   background-size: contain;
 }
 .footer,

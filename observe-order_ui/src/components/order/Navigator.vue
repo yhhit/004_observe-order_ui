@@ -11,13 +11,13 @@
           text-color="#fff"
           active-text-color="#ffd04b"
         >
-          <el-menu-item index="issue-order">Issue order</el-menu-item>
-          <el-menu-item index="get-order">Get order</el-menu-item>
-          <el-menu-item index="data-statistics">Data statistics</el-menu-item>
-          <el-submenu index="user">
+          <el-menu-item index="/orders/post">Issue order</el-menu-item>
+          <el-menu-item index="/orders/get">Get order</el-menu-item>
+          <el-menu-item index="/data-statistics">Data statistics</el-menu-item>
+          <el-submenu index="/users">
             <template slot="title">Me</template>
-            <el-menu-item index="modify-profile">Modify profile</el-menu-item>
-            <el-menu-item index="logout">Logout</el-menu-item>
+            <el-menu-item index="profiles/get">Profile</el-menu-item>
+            <el-menu-item index="login" @click="$store.dispatch('mConfig/clearUserSession');">Logout</el-menu-item>
             <!-- <el-submenu index="2-4">
               <template slot="title">选项4</template>
               <el-menu-item index="2-4-1">选项1</el-menu-item>
@@ -55,7 +55,7 @@ export default {
     name: 'NavigatorFrame',
       data() {
         return {
-            //activeIndex: '',//issue-order
+            activeIndex: '',
             // activeIndex2: "1",
         };
   },
@@ -66,9 +66,13 @@ export default {
     projectName: function(){
       return this.$store.state.mConfig.packageJson[`project-name`];
     },
-    activeIndex: function(){
-      return this.$store.state.mConfig.navigator.split('/')[1];
-    },
+    // activeIndex: function(){
+    //   return 
+    // },
+  },
+  mounted() {
+    //路由守卫才能监听全部路径变化
+    this.activeIndex=this.$store.state.mConfig.navigator
   },
     methods: {
         handleSelect(key, keyPath) {

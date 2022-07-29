@@ -1,11 +1,44 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Navigator from '../components/Navigator.vue'
+import Navigator from '../components/order/Navigator.vue'
 import Login from '../components/user/Login.vue'
 import store from "@/store"
 Vue.use(VueRouter)
 const routes = [
-
+      {
+        path: '/users/login',
+        components:{
+          fullPage:Login
+        },
+        meta:{title:'Login in'},
+      },
+      {
+        path: '/users',
+        components:{
+          navigator:Navigator
+        },
+        children:[
+          {
+            path:'profiles/put',
+            component:()=>import('../components/user/OperateProfile.vue'),
+            meta:{title:'Modify Profile', type:"update"},
+            props:true
+          },
+          //获取自己的个人信息
+          {
+            path:'profiles/get',
+            component:()=>import('../components/user/OperateProfile.vue'),
+            meta:{title:'Profile', type:"read"},
+            props:true
+          },
+          {
+            path:'post',
+            component:()=>import('../components/user/OperateProfile.vue'),
+            meta:{title:'Register', type:"create"},
+            props:true
+          },
+        ]
+      },
     {
         path: '/',
         components:{
@@ -14,13 +47,13 @@ const routes = [
         meta:{title:'Other'},
         children:[
           {
-            path:'issue-order',
-            component:()=>import('../components/IssueOrder.vue'),
-            meta:{title:'Issue Order'},
+            path:'orders/post',
+            component:()=>import('../components/order/OperateOrder.vue'),
+            meta:{title:'Issue Order', type:"create"},
           },
           {
-            path:'get-order',
-            component:()=>import('../components/GetOrder.vue'),
+            path:'orders/get',
+            component:()=>import('../components/order/GetOrder.vue'),
             meta:{title:'Get Order'},
           },
           {
@@ -29,40 +62,35 @@ const routes = [
             meta:{title:'Data Statistics'},
           },
           {
-            path:'error',
+            path:'errors',
             component:()=>import('../components/Error.vue'),
             meta:{title:'404 page not found'},
           },
           {
             path: '',
-            redirect: 'issue-order'
+            redirect: 'orders/post'
           },
           {
             path: '*',
-            redirect: 'error'
+            redirect: 'errors'
           },
         ]
     },
-    {
-        path: '/user/login',
-        meta:{title:'登陆'},
-        components:{
-          fullPage:Login
-        }
-    },
+    
   ]
   
  const router=new VueRouter({
     routes // (缩写) 相当于 routes: routes
   })
 router.beforeEach((to,from,next)=>{
-  if(to.path==='/user/login'||to.path==='/error'){
+  if(to.path==='/users/login'||to.path==='/errors'||to.path==='/users/post'){
     next()
   }else{
-    if(localStorage.getItem('token')){
+    //获取本地存储中的token
+    if(localStorage.getItem("token")){
       next()
     }else{
-      next('/user/login')
+      next('/users/login')
     }
   }
 }
