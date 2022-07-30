@@ -37,7 +37,7 @@
       >
         <el-input v-model="form.repeatPassword" type="password"></el-input>
       </el-form-item>
-      <el-form-item label="Authority" prop="authority">
+      <!-- <el-form-item label="Authority" prop="authority">
         <el-select
           filterable
           v-model="form.authority"
@@ -53,7 +53,7 @@
           >
           </el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <!-- style="margin:auto;width: fit-content;" -->
       <el-form-item>
         <el-button type="primary" @click="onSubmit" v-if="type === 'create'"
@@ -72,13 +72,23 @@
           v-if="type === 'read'"
           >Modify</el-button
         >
+        <el-button
+          type="primary"
+          @click="handleDeleteAccount()"
+          v-if="type === 'read'"
+          >Delete this account</el-button
+        >
       </el-form-item>
     </el-form>
     <el-dialog
       title="Modify password"
       :visible.sync="formForPassword.dialogFormVisible"
     >
-      <el-form :model="formForPassword" :rules="rulesForPassword" ref="formForPassword">
+      <el-form
+        :model="formForPassword"
+        :rules="rulesForPassword"
+        ref="formForPassword"
+      >
         <el-form-item
           label="Old password"
           :label-width="formForPassword.formLabelWidth"
@@ -98,18 +108,16 @@
           :label-width="formForPassword.formLabelWidth"
           prop="repeatPasswordForModify"
         >
-          <el-input v-model="formForPassword.repeatPasswordForModify"></el-input>
+          <el-input
+            v-model="formForPassword.repeatPasswordForModify"
+          ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="formForPassword.dialogFormVisible = false"
           >Cancel</el-button
         >
-        <el-button
-          type="primary"
-          @click="
-            onSubmitForPassword();
-          "
+        <el-button type="primary" @click="onSubmitForPassword()"
           >Confirm</el-button
         >
       </div>
@@ -119,7 +127,13 @@
 
 <script>
 import axios from "axios";
-import { registerUrl, modifyProfileUrl, modifyPasswordUrl, userProfileUrl } from "../const/api";
+import {
+  registerUrl,
+  modifyProfileUrl,
+  modifyPasswordUrl,
+  userProfileUrl,
+  deleteAccountUrl
+} from "../const/api";
 export default {
   name: "OperateProfile",
   mounted() {
@@ -130,9 +144,9 @@ export default {
     var validatePass = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("Please input your password!"));
-      } else if(value.length < 10||value.length > 20){
+      } else if (value.length < 10 || value.length > 20) {
         callback(new Error("Password length must be between 10 and 20!"));
-      }else {
+      } else {
         if (this.form.password !== "") {
           this.$refs.form.validateField("repeatPassword");
         }
@@ -144,18 +158,18 @@ export default {
         callback(new Error("Please repeat your password!"));
       } else if (value !== this.form.password) {
         callback(new Error("Two passwords are inconsistent!"));
-      } else if(value.length < 10||value.length > 20){
+      } else if (value.length < 10 || value.length > 20) {
         callback(new Error("Password length must be between 10 and 20!"));
-      }else{
+      } else {
         callback();
       }
     };
     var validateForModifyPassword = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("Please input your password!"));
-      } else if(value.length < 10||value.length > 20){
+      } else if (value.length < 10 || value.length > 20) {
         callback(new Error("Password length must be between 10 and 20!"));
-      }else {
+      } else {
         if (this.formForPassword.newPassword !== "") {
           this.$refs.formForPassword.validateField("repeatPasswordForModify");
         }
@@ -167,9 +181,9 @@ export default {
         callback(new Error("Please repeat your password!"));
       } else if (value !== this.formForPassword.newPassword) {
         callback(new Error("Two passwords are inconsistent!"));
-      } else if(value.length < 10||value.length > 20){
+      } else if (value.length < 10 || value.length > 20) {
         callback(new Error("Password length must be between 10 and 20!"));
-      }else{
+      } else {
         callback();
       }
     };
@@ -179,17 +193,17 @@ export default {
         userName: "",
         password: "",
         repeatPassword: "",
-        authority: "",
-        authorityOptions: [
-          {
-            value: 1,
-            label: "Issuer",
-          },
-          {
-            value: 2,
-            label: "executor",
-          },
-        ],
+        // authority: "",
+        // authorityOptions: [
+        //   {
+        //     value: 1,
+        //     label: "Issuer",
+        //   },
+        //   {
+        //     value: 2,
+        //     label: "executor",
+        //   },
+        // ],
       },
       formForPassword: {
         dialogFormVisible: false,
@@ -243,13 +257,13 @@ export default {
             trigger: "blur",
           },
         ],
-        authority: [
-          {
-            required: true,
-            message: "Authority is required",
-            trigger: "change",
-          },
-        ],
+        // authority: [
+        //   {
+        //     required: true,
+        //     message: "Authority is required",
+        //     trigger: "change",
+        //   },
+        // ],
       },
       rulesForPassword: {
         oldPassword: [
@@ -303,7 +317,7 @@ export default {
         }
       });
     },
-    onSubmitForPassword(){
+    onSubmitForPassword() {
       console.log("submit!");
       this.$refs.formForPassword.validate((valid) => {
         if (!valid) {
@@ -313,36 +327,40 @@ export default {
         }
       });
     },
-    modifyPassword(){
-      axios.put(modifyPasswordUrl, {
-        oldPassword: this.formForPassword.oldPassword,
-        newPassword: this.formForPassword.newPassword,
-      }).then((res) => {
-        if (res.data.code === 0) {
-          debugger
-          this.$store.dispatch('mConfig/setUserSession', res.data.data);
-          this.$message({
-            message: "Modify password successfully!",
-            type: "success",
-          });
-          this.formForPassword.dialogFormVisible = false;
-        } else {
+    modifyPassword() {
+      axios
+        .put(modifyPasswordUrl, {
+          oldPassword: this.formForPassword.oldPassword,
+          newPassword: this.formForPassword.newPassword,
+        })
+        .then((res) => {
+          if (res.data.code === 0) {
+            debugger;
+            this.$store.dispatch("mConfig/setUserSession", res.data.data);
+            this.$message({
+              message: "Modify password successfully!",
+              type: "success",
+            });
+            this.formForPassword.dialogFormVisible = false;
+          } else {
+            this.$message({
+              message: "Modify password failed!",
+              type: "error",
+            });
+          }
+        })
+        .catch((err) => {
           this.$message({
             message: "Modify password failed!",
             type: "error",
           });
-        }
-      }).catch((err) => {
-        this.$message({
-          message: "Modify password failed!",
-          type: "error",
+        })
+        .then(() => {
+          this.formForPassword.oldPassword = "";
+          this.formForPassword.newPassword = "";
+          this.formForPassword.repeatPassword = "";
+          this.formForPassword.dialogFormVisible = false;
         });
-      }).then(() => {
-        this.formForPassword.oldPassword = "";
-        this.formForPassword.newPassword = "";
-        this.formForPassword.repeatPassword = "";
-        this.formForPassword.dialogFormVisible = false;
-      });
     },
     createUser() {
       axios
@@ -354,7 +372,7 @@ export default {
               message: "Register successfully!",
               type: "success",
             });
-            
+
             //询问是否立即直接登陆
             this.$confirm("Do you want to login directly?", "Login", {
               confirmButtonText: "Login directly",
@@ -362,8 +380,8 @@ export default {
               type: "warning",
             })
               .then(() => {
-                console.log(this)
-                this.$store.dispatch('mConfig/setUserSession', res.data.data);
+                console.log(this);
+                this.$store.dispatch("mConfig/setUserSession", res.data.data);
                 this.$router.push("/");
               })
               .catch(() => {
@@ -390,7 +408,7 @@ export default {
         .then((res) => {
           console.log(res);
           if (res.data.code === 0) {
-            this.$store.dispatch('mConfig/setUserSession', res.data.data);
+            this.$store.dispatch("mConfig/setUserSession", res.data.data);
             this.$message({
               message: "Modify success!",
               type: "success",
@@ -441,27 +459,58 @@ export default {
         formLabelWidth: "120px",
       };
     },
-    getProfile(){
-    
-    axios.post(userProfileUrl).then((res) => {
-      console.log(res);
-      if (res.data.code === 0) {
-        this.form = res.data.data;
-      } else {
-        this.$message({
-          message: "Get profile failed" + (res.data.err||""),
-          type: "error",
+    getProfile() {
+      axios
+        .post(userProfileUrl)
+        .then((res) => {
+          console.log(res);
+          if (res.data.code === 0) {
+            this.form = res.data.data;
+          } else {
+            this.$message({
+              message: "Get profile failed" + (res.data.err || ""),
+              type: "error",
+            });
+          }
+        })
+        .catch((err) => {
+          this.$message({
+            message: "Get profile failed",
+            type: "error",
+          });
         });
-      }
-    }).catch((err) => {
-      this.$message({
-        message: "Get profile failed",
-        type: "error",
-      });
-    });
-  }
-  },
-  
+    },
+    handleDeleteAccount() {
+      this.$confirm("Are you sure delete account？This action cannot be undone, your account will be deleted permanently!")
+        .then((_) => {
+          axios
+            .delete(deleteAccountUrl)
+            .then((res) => {
+              console.log(res);
+              if (res.data.code === 0) {
+                this.$store.dispatch("mConfig/clearUserSession", {});
+                this.$message({
+                  message: "Delete account successfully!",
+                  type: "success",
+                });
+                this.$router.push("/users/login");
+              } else {
+                this.$message({
+                  message: "Delete account failed!",
+                  type: "error",
+                });
+              }
+            })
+            .catch((err) => {
+              this.$message({
+                message: "Delete account failed!",
+                type: "error",
+              });
+            });
+        })
+        .catch((_) => {});
+    },
+    },
 };
 </script>
 

@@ -1,117 +1,146 @@
 <template>
   <div>
     <template>
-        <el-table
-            ref="multipleTable"
-            :data="listData.ordersData"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange">
-            <el-table-column
-            type="selection"
-            width="55">
-            </el-table-column>
-            <el-table-column
-            prop="title"
-            label="Title"
-            width="120"
-            show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column
-            prop="toWhom"
-            label="To Whom"
-            width="120"
-            show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column
-            label="Start And End Date Time"
-            width="310">
-            <template slot-scope="scope">{{ getLocalTime(scope.row.startAndEndDateTime[0])}} to {{getLocalTime(scope.row.startAndEndDateTime[1])}}</template>
-            </el-table-column>
-            <el-table-column
-            label="Cycle"
-            width="240"
-            show-overflow-tooltip>
-            <template slot-scope="scope">{{ convertCycleArrToText(scope.row.cycle) }}</template>
-            </el-table-column>
-            <el-table-column
-            type="expand"
-            prop="content"
-            label=""
-            width="55"
-            show-overflow-tooltip>
-            <template slot-scope="props">
-              <el-form label-position="left" inline class="table-expand">
-                <el-form-item label="content">
-                  <span>{{ props.row.content }}</span>
-                </el-form-item>
-              </el-form>
-            </template>
-            </el-table-column>
-            <el-table-column
-            prop="content"
-            label="Content"
-            width="240"
-            show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column
-            label="Successful"
-            width="100"
-            show-overflow-tooltip>
-            <template slot-scope="scope">
-              <el-switch
-                v-bind:value="scope.row.successful"
-                disabled
-                active-color="#13ce66"
-                inactive-color="#ff4949">
-              </el-switch>
-            </template>
-            </el-table-column>
-            <el-table-column
-            label="Executed"
-            width="100"
-            show-overflow-tooltip>
-            <template slot-scope="scope">
-              <el-switch
-                v-bind:value="scope.row.executed"
-                disabled
-                active-color="#13ce66"
-                inactive-color="#ff4949">
-              </el-switch>
-            </template>
-            </el-table-column>
-            <el-table-column
-            prop="operation"
-            label="Operation"
-            width="240"
-            show-overflow-tooltip>
-            <template slot-scope="scope">
-              <el-button
+      <el-table
+        ref="multipleTable"
+        :data="listData.ordersData"
+        tooltip-effect="dark"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55"> </el-table-column>
+        <el-table-column
+          prop="title"
+          label="Title"
+          width="120"
+          show-overflow-tooltip
+        >
+        </el-table-column>
+        <el-table-column
+          prop="issuer"
+          label="Issuer"
+          width="120"
+          show-overflow-tooltip
+        >
+        </el-table-column>
+        <el-table-column
+          prop="toWhom"
+          label="To Whom"
+          width="120"
+          show-overflow-tooltip
+        >
+        </el-table-column>
+        <el-table-column label="Start And End Date Time" width="310">
+          <template slot-scope="scope"
+            >{{ getLocalTime(scope.row.startAndEndDateTime[0]) }} to
+            {{ getLocalTime(scope.row.startAndEndDateTime[1]) }}</template
+          >
+        </el-table-column>
+        <el-table-column label="Cycle" width="240" show-overflow-tooltip>
+          <template slot-scope="scope">{{
+            convertCycleArrToText(scope.row.cycle)
+          }}</template>
+        </el-table-column>
+        <el-table-column
+          type="expand"
+          prop="content"
+          label=""
+          width="55"
+          show-overflow-tooltip
+        >
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="table-expand">
+              <el-form-item label="content">
+                <span>{{ props.row.content }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="content"
+          label="Content"
+          width="240"
+          show-overflow-tooltip
+        >
+        </el-table-column>
+        <el-table-column label="Successful" width="100" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <el-switch
+              v-bind:value="scope.row.successful"
+              disabled
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="Executed" width="100" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <el-switch
+              v-bind:value="scope.row.executed"
+              disabled
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="operation"
+          label="Operation"
+          width="300"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <!-- <el-button
                 size="mini"
-                @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
-              <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
-            </template>
-            </el-table-column>
+                @click="handleEdit(scope.$index, scope.row)">Edit</el-button> -->
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleSuccess(scope.$index, scope.row)"
+              >Success</el-button
+            >
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDefeat(scope.$index, scope.row)"
+              >Defeat</el-button
+            >
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index, scope.row)"
+              >Delete</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+      <p></p>
+      <div class="block">
+        <el-button type="primary" size="mini" @click="onSuccess()"
+          >Success</el-button
+        >
+        <el-button type="primary" size="mini" @click="onDefeat()"
+          >Defeat</el-button
+        >
+        <el-button type="danger" size="mini" @click="onDelete"
+          >Delete selected</el-button
+        >
 
-
-        </el-table>
-        <p></p>
-          <div class="block">
-            <el-button type="danger" size="mini" @click="onDelete">Delete selected</el-button>
-            <el-pagination style="display: inline-block"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="listData.currentPage"
-              :page-sizes="[5, 10, 50, 100]"
-              :page-size="listData.pageSize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="listData.ordersData.length">
-            </el-pagination>
-          </div>
-        <!-- <div style="margin-top: 20px">
+        <el-pagination
+          style="display: inline-block"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="listData.currentPage"
+          :page-sizes="[5, 10, 50, 100]"
+          :page-size="listData.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="listData.ordersData.length"
+        >
+        </el-pagination>
+      </div>
+      <!-- <div style="margin-top: 20px">
             <el-button @click="toggleSelection()">取消选择</el-button>
         </div> -->
     </template>
@@ -119,92 +148,244 @@
 </template>
 
 <script>
-import axios from 'axios';
-import {getLocalTime} from '../utils';
-import { orderListUrl } from '../const/api';
-  export default {
-    name: "GetOrder",
-    data() {
-      return {
-        listData:{
-          ordersData: [],
-          multipleSelection: [],
-          total: 0,
-          currentPage: 1,
-          pageSize:5
-        }
-
+import axios from "axios";
+import { getLocalTime } from "../utils";
+import { orderListUrl, deleteOrderUrl, orderToSuccessfulUrl, orderToDefeatUrl } from "../const/api";
+export default {
+  name: "GetOrder",
+  data() {
+    return {
+      listData: {
+        ordersData: [],
+        multipleSelection: [],
+        total: 0,
+        currentPage: 1,
+        pageSize: 5,
+      },
+    };
+  },
+  mounted() {
+    this.getOrderList();
+  },
+  computed: {},
+  methods: {
+    // toggleSelection(rows) {
+    //   if (rows) {
+    //     rows.forEach(row => {
+    //       this.$refs.multipleTable.toggleRowSelection(row);
+    //     });
+    //   } else {
+    //     this.$refs.multipleTable.clearSelection();
+    //   }
+    // },
+    handleDelete(index, row) {
+      console.log(index, row);
+      //删除操作
+      this.deleteItem([row]);
+    },
+    handleDefeat(index, row) {
+      console.log(index, row);
+      //失败操作
+      this.defeatItem([row]);
+    },
+    handleSuccess(index, row) {
+      console.log(index, row);
+      //成功操作
+      this.successItem([row]);
+    },
+    successItem(rows) {
+      //从rows中取出id组成一个新数组
+      let ids = [];
+      rows.forEach((row) => {
+        ids.push(row.id);
+      });
+      axios
+        .put(orderToSuccessfulUrl, {
+          data: {
+            id: ids,
+          },
+        })
+        .then((res) => {
+          if (res.data.code == 0) {
+            this.$message({
+              message: "Successful",
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: "Failed",
+              type: "error",
+            });
+          }
+          this.getOrderList();
+          this.$refs.multipleTable.clearSelection();
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$message({
+            message: "Failed",
+            type: "error",
+          });
+        });
+    },
+    defeatItem(rows) {
+      //从rows中取出id组成一个新数组
+      let ids = [];
+      rows.forEach((row) => {
+        ids.push(row.id);
+      });
+      axios
+        .put(orderToDefeatUrl, {
+          data: {
+            id: ids,
+          },
+        })
+        .then((res) => {
+          if (res.data.code == 0) {
+            this.$message({
+              message: "Successful",
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: "Failed",
+              type: "error",
+            });
+          }
+          this.getOrderList();
+          this.$refs.multipleTable.clearSelection();
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$message({
+            message: "Failed",
+            type: "error",
+          });
+        });
+    },
+    deleteItem(rows) {
+      //从rows中取出id组成一个新数组
+      let ids = [];
+      rows.forEach((row) => {
+        ids.push(row.id);
+      });
+      axios
+        .delete(deleteOrderUrl, {
+          data: {
+            id: ids,
+          },
+        })
+        .then((res) => {
+          if (res.data.code == 0) {
+            this.$message({
+              message: "Delete Success",
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: "Delete Failed",
+              type: "error",
+            });
+          }
+          this.getOrderList();
+          //this.$refs.multipleTable.clearSelection();
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$message({
+            message: "Delete Failed",
+            type: "error",
+          });
+        });
+    },
+    checkSelectAndConfirm(tip, callback) {
+      if(this.listData.multipleSelection.length == 0){
+        this.$message({
+          message: "Please select the order",
+          type: "error",
+        });
+        return;
       }
+      this.$confirm(tip, "Confirm", {
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancel",
+        type: "warning",
+      })
+        .then(() => {
+          callback()
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Cancel"
+          });
+        });
     },
-    mounted() {
-      this.getOrderList();
+    onDelete() {
+      this.checkSelectAndConfirm("Are you sure to delete the selected order?", () => {
+        this.deleteItem(this.listData.multipleSelection);
+      });
     },
-    computed: {
-      
+    onDefeat() {
+      this.checkSelectAndConfirm("Are you sure to set the selected order to failure?", () => {
+        this.defeatItem(this.listData.multipleSelection);
+      });
     },
-    methods: {
-      // toggleSelection(rows) {
-      //   if (rows) {
-      //     rows.forEach(row => {
-      //       this.$refs.multipleTable.toggleRowSelection(row);
-      //     });
-      //   } else {
-      //     this.$refs.multipleTable.clearSelection();
-      //   }
-      // },
-      onDelete() {
-        //TODO: 删除选中的订单,发送请求到后台
-        this.getOrderList()
-        this.$refs.multipleTable.clearSelection();
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.pageSize=val;
-      },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-      },
-      getOrderList() {
-        axios.get(orderListUrl).then(res => {
-        // axios.get(`https://console-mock.apipost.cn/app/mock/project/5e6147fc-7bcb-4737-887f-d102a55c8030/api/v1/order/list/${this.pageSize}/${this.currentPage}`).then(res => {
-          if(res.data.code===0){
+    onSuccess() {
+      this.checkSelectAndConfirm("Are you sure to set the selected order to successful?", () => {
+        this.successItem(this.listData.multipleSelection);
+      });
+    },
+    handleSelectionChange(val) {
+      this.listData.multipleSelection = val;
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+    },
+    getOrderList() {
+      axios
+        .get(orderListUrl)
+        .then((res) => {
+          // axios.get(`https://console-mock.apipost.cn/app/mock/project/5e6147fc-7bcb-4737-887f-d102a55c8030/api/v1/order/list/${this.pageSize}/${this.currentPage}`).then(res => {
+          if (res.data.code === 0) {
             this.listData.ordersData = res.data.data.ordersData;
-          }else{
+          } else {
             this.$message.error(res.data.err);
           }
-          
-        }).catch(function (error) {
+        })
+        .catch(function (error) {
           // handle error
           console.log(error);
         })
         .then(function () {
           // always executed
         });
-      },
-      getLocalTime(time) {
-        return getLocalTime(time)
-      },
-      convertCycleArrToText(cycle) {
-        return cycle.join(' ')
-      }
-    }
-  }
+    },
+    getLocalTime(time) {
+      return getLocalTime(time);
+    },
+    convertCycleArrToText(cycle) {
+      return cycle.join(" ");
+    },
+  },
+};
 </script>
 
 <style>
-  .table-expand {
-    font-size: 0;
-  }
-  .table-expand label {
-    width: 90px;
-    color: #99a9bf;
-  }
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand {
+  font-size: 0;
+}
+.table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>

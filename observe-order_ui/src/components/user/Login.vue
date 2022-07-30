@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="header">
-      <img width="70px" src="/logo.png" alt="logo"/><h2 class="logo">WELECOME TO {{projectName.toUpperCase()}}</h2>
+      <img width="70px" src="/res/img/logo.png" alt="logo"/><h2 class="logo">WELECOME TO {{projectName.toUpperCase()}}</h2>
     </div>
     <div class="login">
     <el-card>
