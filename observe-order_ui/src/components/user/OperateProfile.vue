@@ -138,7 +138,8 @@ export default {
   name: "OperateProfile",
   mounted() {
     console.log("OperateProfile mounted");
-    this.getProfile();
+    if(this.$route.meta.type!=="create")
+      this.getProfile();
   },
   data() {
     var validatePass = (rule, value, callback) => {
@@ -465,7 +466,7 @@ export default {
         .then((res) => {
           console.log(res);
           if (res.data.code === 0) {
-            this.form = res.data.data;
+            this.form = res.data.data.userInfo;
           } else {
             this.$message({
               message: "Get profile failed" + (res.data.err || ""),

@@ -106,7 +106,8 @@ export default {
     handleLogin() {
       let self = this;
       this.loading = true;
-      return axios.post(loginUrl).then(res => {
+      console.log(this.model)
+      return axios.post(loginUrl,this.model).then(res => {
           if( res.data.code===0){
             this.$store.dispatch('mConfig/setUserSession', res.data.data);
             this.$message.success("Login successfull");

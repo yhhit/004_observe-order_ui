@@ -6,11 +6,51 @@ import store from './store/index.js'
 //读取package.json文件放入stored的mConfig中
 import packageJson from '../package.json'
 import router from './vue-router'
+import axios from 'axios'
 store.commit('mConfig/SET_CONFIG',packageJson)
 //读取store中的packageJson文件
 // console.log(store.state.mConfig.packageJson)
 Vue.config.productionTip = false
 Vue.use(ElementUI);
+
+// http request 拦截器可选
+axios.interceptors.request.use(
+  config => {
+    //过滤登录请求和注册请求
+    if(config.url.indexOf('/users/login')!==-1||config.url.indexOf('/users/post')!==-1){
+      return config
+    }
+    if (localStorage.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+      config.headers.Authorization = `Bearer ${localStorage.token}`;
+    }
+    return config;
+  },
+  err => {
+    return Promise.reject(err);
+  });
+
+axios.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    if (error.response.status === 401) {
+     //输出授权失败错误信息
+      console.log('授权失败');
+      //清除token
+      localStorage.removeItem('token');
+      //跳转到登录页面
+      router.push('/users/login');
+    } else {
+     //输出其他错误信息
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+      
+    }
+    return Promise.reject(error);
+  }
+);
 
 new Vue({
   render: h => h(App),
