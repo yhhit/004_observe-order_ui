@@ -16,6 +16,10 @@ const mConfig={
             commit("SET_USER_INFO",data.userInfo)
             localStorage.setItem("token",data.token)
         },
+
+        setUserUserInfo({commit},data){
+            commit("SET_USER_INFO",data)
+        },
         clearUserSession({commit}){
             commit("SET_USER_INFO",{})
             localStorage.setItem("token","")

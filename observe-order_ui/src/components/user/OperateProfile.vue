@@ -13,7 +13,11 @@
           :disabled="type === 'read'"
         ></el-input>
       </el-form-item>
-      <el-form-item label="Password" prop="password">
+      <el-form-item
+        label="Password"
+        prop="password"
+        v-if="type === 'read' || type === 'create'"
+      >
         <el-input
           v-model="form.password"
           :disabled="type === 'read'"
@@ -127,19 +131,19 @@
 
 <script>
 import axios from "axios";
+import qs from "qs";
 import {
   registerUrl,
   modifyProfileUrl,
   modifyPasswordUrl,
   userProfileUrl,
-  deleteAccountUrl
+  deleteAccountUrl,
 } from "../const/api";
 export default {
   name: "OperateProfile",
   mounted() {
     console.log("OperateProfile mounted");
-    if(this.$route.meta.type!=="create")
-      this.getProfile();
+    if (this.$route.meta.type !== "create") this.getProfile();
   },
   data() {
     var validatePass = (rule, value, callback) => {
@@ -320,6 +324,7 @@ export default {
     },
     onSubmitForPassword() {
       console.log("submit!");
+      console.log(this.formForPassword);
       this.$refs.formForPassword.validate((valid) => {
         if (!valid) {
           return;
@@ -329,39 +334,45 @@ export default {
       });
     },
     modifyPassword() {
-      axios
-        .put(modifyPasswordUrl, {
-          oldPassword: this.formForPassword.oldPassword,
-          newPassword: this.formForPassword.newPassword,
-        })
-        .then((res) => {
-          if (res.data.code === 0) {
-            debugger;
-            this.$store.dispatch("mConfig/setUserSession", res.data.data);
-            this.$message({
-              message: "Modify password successfully!",
-              type: "success",
+      axios({
+            method: "put",
+            changeOrigin: "true",
+            url: modifyPasswordUrl,
+            transformRequest: [
+              function (data) {
+                // 对 data 进行任意转换处理
+                return qs.stringify(data);
+              },
+            ],
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            data: {oldPassword:this.formForPassword.oldPassword, newPasswordthis:this.formForPassword.newPassword},
+          })
+            // axios
+            //   .put(modifyProfileUrl, this.form)
+            .then((res) => {
+              console.log(res);
+              if (res.data.code === 0) {
+                this.$message({
+                  message: "Modify success!",
+                  type: "success",
+                });
+                this.$router.go(-1);
+              } else {
+                this.$message({
+                  message: res.data.err,
+                  type: "error",
+                });
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              this.$message({
+                message: "Modify failed",
+                type: "error",
+              });
             });
-            this.formForPassword.dialogFormVisible = false;
-          } else {
-            this.$message({
-              message: "Modify password failed!",
-              type: "error",
-            });
-          }
-        })
-        .catch((err) => {
-          this.$message({
-            message: "Modify password failed!",
-            type: "error",
-          });
-        })
-        .then(() => {
-          this.formForPassword.oldPassword = "";
-          this.formForPassword.newPassword = "";
-          this.formForPassword.repeatPassword = "";
-          this.formForPassword.dialogFormVisible = false;
-        });
     },
     createUser() {
       axios
@@ -404,12 +415,27 @@ export default {
         });
     },
     updateUser() {
-      axios
-        .post(modifyProfileUrl, this.form)
+      axios({
+        method: "put",
+        changeOrigin: "true",
+        url: modifyProfileUrl,
+        transformRequest: [
+          function (data) {
+            // 对 data 进行任意转换处理
+            return qs.stringify(data);
+          },
+        ],
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        data: this.form,
+      })
+        // axios
+        //   .put(modifyProfileUrl, this.form)
         .then((res) => {
           console.log(res);
           if (res.data.code === 0) {
-            this.$store.dispatch("mConfig/setUserSession", res.data.data);
+            this.$store.dispatch("mConfig/setUserUserInfo", res.data.data);
             this.$message({
               message: "Modify success!",
               type: "success",
@@ -466,7 +492,7 @@ export default {
         .then((res) => {
           console.log(res);
           if (res.data.code === 0) {
-            this.form = res.data.data.userInfo;
+            this.form = res.data.data;
           } else {
             this.$message({
               message: "Get profile failed" + (res.data.err || ""),
@@ -482,7 +508,9 @@ export default {
         });
     },
     handleDeleteAccount() {
-      this.$confirm("Are you sure delete account？This action cannot be undone, your account will be deleted permanently!")
+      this.$confirm(
+        "Are you sure delete account？This action cannot be undone, your account will be deleted permanently!"
+      )
         .then((_) => {
           axios
             .delete(deleteAccountUrl)
@@ -511,7 +539,7 @@ export default {
         })
         .catch((_) => {});
     },
-    },
+  },
 };
 </script>
 

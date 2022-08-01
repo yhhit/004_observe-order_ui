@@ -17,12 +17,15 @@ Vue.use(ElementUI);
 axios.interceptors.request.use(
   config => {
     //过滤登录请求和注册请求
-    if(config.url.indexOf('/users/login')!==-1||config.url.indexOf('/users/post')!==-1){
+    if(config.url.indexOf('/users/login')!==-1||config.url.indexOf('/users/post')!==-1||config.url.indexOf('/users/register')!==-1){
       return config
     }
     if (localStorage.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
       config.headers.Authorization = `Bearer ${localStorage.token}`;
     }
+
+    config.headers['Content-Type']= 'application/x-www-form-urlencoded'
+
     return config;
   },
   err => {
@@ -34,6 +37,8 @@ axios.interceptors.response.use(
     return response;
   },
   error => {
+    console.log(111,error)
+    
     if (error.response.status === 401) {
      //输出授权失败错误信息
       console.log('授权失败');
@@ -41,6 +46,10 @@ axios.interceptors.response.use(
       localStorage.removeItem('token');
       //跳转到登录页面
       router.push('/users/login');
+    }if(error.response.status===302){
+      //获取重定向的地址
+      console.log(1,error.response.headers.location);
+      router.push(error.response.headers.location);
     } else {
      //输出其他错误信息
       console.log(error.response.data);
