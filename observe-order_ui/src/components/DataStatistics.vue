@@ -84,14 +84,12 @@ export default {
         {
           name: "DFT_ON_PRIMISE",
           type: "line",
-          stack: "Total",
           smooth: true,
           data: this.yAxis.DFT_ON_PRIMISE
         },
         {
           name: "CS_AKS",
           type: "line",
-          stack: "Total",
           smooth: true,
           data: this.yAxis.CS_AKS
         },

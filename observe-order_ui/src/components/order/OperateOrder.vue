@@ -75,6 +75,7 @@
 
 <script>
 import axios from 'axios';
+import qs from "qs";
 import { issueOrderUrl, toWhomOptionsUrl } from '../const/api';
 export default {
   name: "OperateOrder",
@@ -153,7 +154,23 @@ export default {
       });
     },
     issueOrder() {
-      axios.post(issueOrderUrl, this.form)
+      // this.form.startAndEndDateTime[0] = this.form.startAndEndDateTime[0].toString()
+      // this.form.startAndEndDateTime[1] = this.form.startAndEndDateTime[1].toString()
+      axios({
+        method: "post",
+        changeOrigin: "true",
+        url: issueOrderUrl,
+        transformRequest: [
+          function (data) {
+            // 对 data 进行任意转换处理
+            return qs.stringify(data);
+          },
+        ],
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        data: this.form,
+      })
         .then((res) => {
           console.log(res);
           if (res.data.code === 0) {

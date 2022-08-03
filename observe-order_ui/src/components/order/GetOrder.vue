@@ -348,8 +348,14 @@ export default {
     },
     getOrderList() {
       axios
-        .get(orderListUrl)
+        .get(orderListUrl, {
+          params: {
+            currentPage: this.listData.currentPage,
+            pageSize: this.listData.pageSize,
+          },
+        })
         .then((res) => {
+          console.log(res)
           // axios.get(`https://console-mock.apipost.cn/app/mock/project/5e6147fc-7bcb-4737-887f-d102a55c8030/api/v1/order/list/${this.pageSize}/${this.currentPage}`).then(res => {
           if (res.data.code === 0) {
             this.listData.ordersData = res.data.data.ordersData;
