@@ -17,8 +17,11 @@ export default {
         }
     }
   },
-  mounted() {
- axios.get(dataStatisticsUrl).then((res)=>{
+  async mounted() {
+    debugger
+    console.log(this)
+    try{
+        let res=await axios.get(dataStatisticsUrl)
         console.log(res)
         if(res.data.code===0){
           //从res.data数组中取出每个对象的属性，并赋值给yAxis对象
@@ -31,11 +34,9 @@ export default {
         }else{
             this.$message.error(res.data.err||"Get data error");
         }
-    }).catch((err)=>{
-        this.$message.error(err);
-    });
-
-
+    }catch(err){
+      this.$message.error(err);
+    }
   },
   methods:{
     draw(){

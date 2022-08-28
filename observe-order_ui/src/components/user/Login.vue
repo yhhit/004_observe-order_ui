@@ -1,43 +1,51 @@
 <template>
   <div id="app">
     <div class="header">
-      <img width="70px" src="/res/img/logo.png" alt="logo"/><h2 class="logo">WELECOME TO {{projectName.toUpperCase()}}</h2>
+      <img width="70px" src="/res/img/logo.png" alt="logo" />
+      <h2 class="logo">WELECOME TO {{ projectName.toUpperCase() }}</h2>
     </div>
     <div class="login">
-    <el-card>
-      <h2>Login</h2>
-      <el-form
-        class="login-form"
-        :model="model"
-        :rules="rules"
-        ref="form"
-        @submit.native.prevent="login"
-      >
-        <el-form-item prop="username">
-          <el-input v-model="model.username" placeholder="Username" prefix-icon="fas fa-user"></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            v-model="model.password"
-            placeholder="Password"
-            type="password"
-            prefix-icon="fas fa-lock"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            :loading="loading"
-            class="login-button"
-            type="primary"
-            native-type="submit"
-            block
-          >Login</el-button>
-        </el-form-item>
-        <!-- <a class="forgot-password" href="/">Forgot password ?</a> -->
-        <router-link class="forgot-password" to="/users/post">Register</router-link>
-      </el-form>
-    </el-card>
-  </div>
+      <el-card>
+        <h2>Login</h2>
+        <el-form
+          class="login-form"
+          :model="model"
+          :rules="rules"
+          ref="form"
+          @submit.native.prevent="login"
+        >
+          <el-form-item prop="username">
+            <el-input
+              v-model="model.username"
+              placeholder="Username"
+              prefix-icon="fas fa-user"
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model="model.password"
+              placeholder="Password"
+              type="password"
+              prefix-icon="fas fa-lock"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              :loading="loading"
+              class="login-button"
+              type="primary"
+              native-type="submit"
+              block
+              >Login</el-button
+            >
+          </el-form-item>
+          <!-- <a class="forgot-password" href="/">Forgot password ?</a> -->
+          <router-link class="forgot-password" to="/users/post"
+            >Register</router-link
+          >
+        </el-form>
+      </el-card>
+    </div>
 
     <div class="footer">
       <!-- <div class="links">
@@ -45,19 +53,17 @@
         <span>Feature 2</span>
         <span>Feature 3</span>
       </div> -->
-      <div class="version">Version {{version}}</div>
+      <div class="version">Version {{ version }}</div>
     </div>
   </div>
-  
 </template>
 
 <script>
-import axios from 'axios';
-import {loginUrl} from "../const/api.js"
+import axios from "axios";
+import { loginUrl } from "../const/api.js";
 export default {
   name: "Login-component",
-  mounted: function() {
-  },
+  mounted: function () {},
   data() {
     return {
       // validCredentials: {
@@ -93,50 +99,45 @@ export default {
       },
     };
   },
-  computed:{
-    version: function(){
+  computed: {
+    version: function () {
       return this.$store.state.mConfig.packageJson.version;
     },
-    projectName: function(){
+    projectName: function () {
       return this.$store.state.mConfig.packageJson[`project-name`];
-    }
+    },
   },
   methods: {
-    
-    handleLogin() {
+    async handleLogin() {
       let self = this;
       this.loading = true;
-      console.log(this.model)
-      return axios.post(loginUrl,this.model).then(res => {
-          if( res.data.code===0){
-            this.$store.dispatch('mConfig/setUserSession', res.data.data);
-            this.$message.success("Login successfull");
-            setTimeout(() => {
-              this.$router.push('/');
-            }, 1000);
-          }else{
-            this.$message.error("Login failed, "+(res.data.err||"network error!"));
-          }
-          
-        }).catch(function (error) {
-          // handle error
-          console.log(error);
-          self.$message.error("Login failed:"+error);
-        })
-        .then(function () {
-          // always executed
-          self.loading = false;
-        });
+      try {
+        let res = await axios.post(loginUrl, this.model);
+        if (res.data.code === 0) {
+          this.$store.dispatch("mConfig/setUserSession", res.data.data);
+          this.$message.success("Login successfull");
+          await setTimeout(null, 1000);
+          this.$router.push("/");
+        } else {
+          this.$message.error(
+            "Login failed, " + (res.data.err || "network error!")
+          );
+        }
+      } catch (error) {
+        self.$message.error("Login failed:" + error);
+      } finally {
+        self.loading = false;
+      }
+      return;
     },
     async login() {
-      let valid = await this.$refs.form.validate();
-      if (!valid) {
-        return;
-      }
-      this.handleLogin().catch(err => {
-        console.log(err);
-      });
-      
+      try {
+        let valid = await this.$refs.form.validate();
+        if (!valid) {
+          return;
+        }
+        await this.handleLogin();
+      } catch {}
     },
   },
 };

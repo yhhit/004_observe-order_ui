@@ -150,7 +150,12 @@
 <script>
 import axios from "axios";
 import { getLocalTime } from "../utils";
-import { orderListUrl, deleteOrderUrl, orderToSuccessfulUrl, orderToDefeatUrl } from "../const/api";
+import {
+  orderListUrl,
+  deleteOrderUrl,
+  orderToSuccessfulUrl,
+  orderToDefeatUrl,
+} from "../const/api";
 export default {
   name: "GetOrder",
   data() {
@@ -180,161 +185,155 @@ export default {
     // },
     handleDelete(index, row) {
       console.log(index, row);
-      //删除操作
       this.deleteItem([row]);
     },
     handleDefeat(index, row) {
       console.log(index, row);
-      //失败操作
       this.defeatItem([row]);
     },
     handleSuccess(index, row) {
       console.log(index, row);
-      //成功操作
       this.successItem([row]);
     },
-    successItem(rows) {
+    async successItem(rows) {
       //从rows中取出id组成一个新数组
       let ids = [];
       rows.forEach((row) => {
         ids.push(row.id);
       });
-      axios
-        .put(orderToSuccessfulUrl, {
+      try {
+        let res = await axios.put(orderToSuccessfulUrl, {
           data: {
             id: ids,
           },
-        })
-        .then((res) => {
-          if (res.data.code == 0) {
-            this.$message({
-              message: "Successful",
-              type: "success",
-            });
-          } else {
-            this.$message({
-              message: "Failed",
-              type: "error",
-            });
-          }
-          this.getOrderList();
-          this.$refs.multipleTable.clearSelection();
-        })
-        .catch((err) => {
-          console.log(err);
+        });
+
+        if (res.data.code == 0) {
+          this.$message({
+            message: "Successful",
+            type: "success",
+          });
+        } else {
           this.$message({
             message: "Failed",
             type: "error",
           });
+        }
+        this.getOrderList();
+        this.$refs.multipleTable.clearSelection();
+      } catch (err) {
+        this.$message({
+          message: "Failed",
+          type: "error",
         });
+      }
     },
-    defeatItem(rows) {
+    async defeatItem(rows) {
       //从rows中取出id组成一个新数组
       let ids = [];
       rows.forEach((row) => {
         ids.push(row.id);
       });
-      axios
-        .put(orderToDefeatUrl, {
+      try {
+        let res = await axios.put(orderToDefeatUrl, {
           data: {
             id: ids,
           },
-        })
-        .then((res) => {
-          if (res.data.code == 0) {
-            this.$message({
-              message: "Successful",
-              type: "success",
-            });
-          } else {
-            this.$message({
-              message: "Failed",
-              type: "error",
-            });
-          }
-          this.getOrderList();
-          this.$refs.multipleTable.clearSelection();
-        })
-        .catch((err) => {
-          console.log(err);
+        });
+        if (res.data.code == 0) {
+          this.$message({
+            message: "Successful",
+            type: "success",
+          });
+        } else {
           this.$message({
             message: "Failed",
             type: "error",
           });
+        }
+        this.getOrderList();
+        this.$refs.multipleTable.clearSelection();
+      } catch (err) {
+        console.log(err);
+        this.$message({
+          message: "Failed",
+          type: "error",
         });
+      }
     },
-    deleteItem(rows) {
+    async deleteItem(rows) {
       //从rows中取出id组成一个新数组
       let ids = [];
       rows.forEach((row) => {
         ids.push(row.id);
       });
-      axios
-        .delete(deleteOrderUrl, {
+      try {
+        let res = await axios.delete(deleteOrderUrl, {
           data: {
             id: ids,
           },
-        })
-        .then((res) => {
-          if (res.data.code == 0) {
-            this.$message({
-              message: "Delete Success",
-              type: "success",
-            });
-          } else {
-            this.$message({
-              message: "Delete Failed",
-              type: "error",
-            });
-          }
-          this.getOrderList();
-          //this.$refs.multipleTable.clearSelection();
-        })
-        .catch((err) => {
-          console.log(err);
+        });
+        if (res.data.code == 0) {
+          this.$message({
+            message: "Delete Success",
+            type: "success",
+          });
+        } else {
           this.$message({
             message: "Delete Failed",
             type: "error",
           });
+        }
+        this.getOrderList();
+        //this.$refs.multipleTable.clearSelection();
+      } catch (err) {
+        console.log(err);
+        this.$message({
+          message: "Delete Failed",
+          type: "error",
         });
+      }
     },
-    checkSelectAndConfirm(tip, callback) {
-      if(this.listData.multipleSelection.length == 0){
+    async checkSelectAndConfirm(tip, callback) {
+      if (this.listData.multipleSelection.length == 0) {
         this.$message({
           message: "Please select the order",
           type: "error",
         });
         return;
       }
-      this.$confirm(tip, "Confirm", {
-        confirmButtonText: "OK",
-        cancelButtonText: "Cancel",
-        type: "warning",
-      })
-        .then(() => {
-          callback()
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "Cancel"
-          });
+      try {
+        await this.$confirm(tip, "Confirm", {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type: "warning",
         });
+        if (callback) callback();
+        else return Promise.resolve();
+      } catch {
+        this.$message({
+          type: "info",
+          message: "Cancel",
+        });
+      }
     },
-    onDelete() {
-      this.checkSelectAndConfirm("Are you sure to delete the selected order?", () => {
-        this.deleteItem(this.listData.multipleSelection);
-      });
+    async onDelete() {
+      await this.checkSelectAndConfirm(
+        "Are you sure to delete the selected order?"
+      );
+      this.deleteItem(this.listData.multipleSelection);
     },
-    onDefeat() {
-      this.checkSelectAndConfirm("Are you sure to set the selected order to failure?", () => {
-        this.defeatItem(this.listData.multipleSelection);
-      });
+    async onDefeat() {
+      await this.checkSelectAndConfirm(
+        "Are you sure to set the selected order to failure?"
+      );
+      this.defeatItem(this.listData.multipleSelection);
     },
-    onSuccess() {
-      this.checkSelectAndConfirm("Are you sure to set the selected order to successful?", () => {
-        this.successItem(this.listData.multipleSelection);
-      });
+    async onSuccess() {
+      await this.checkSelectAndConfirm(
+        "Are you sure to set the selected order to successful?"
+      );
+      this.successItem(this.listData.multipleSelection);
     },
     handleSelectionChange(val) {
       this.listData.multipleSelection = val;
@@ -346,30 +345,22 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
     },
-    getOrderList() {
-      axios
-        .get(orderListUrl, {
+    async getOrderList() {
+      try {
+        let res = await axios.get(orderListUrl, {
           params: {
             currentPage: this.listData.currentPage,
             pageSize: this.listData.pageSize,
           },
-        })
-        .then((res) => {
-          console.log(res)
-          // axios.get(`https://console-mock.apipost.cn/app/mock/project/5e6147fc-7bcb-4737-887f-d102a55c8030/api/v1/order/list/${this.pageSize}/${this.currentPage}`).then(res => {
-          if (res.data.code === 0) {
-            this.listData.ordersData = res.data.data.ordersData;
-          } else {
-            this.$message.error(res.data.err);
-          }
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
-        })
-        .then(function () {
-          // always executed
         });
+        if (res.data.code === 0) {
+          this.listData.ordersData = res.data.data.ordersData;
+        } else {
+          this.$message.error(res.data.err);
+        }
+      } catch (error) {
+        this.$message.error("Failed to get order list");
+      }
     },
     getLocalTime(time) {
       return getLocalTime(time);
