@@ -47,6 +47,7 @@ axios.interceptors.response.use(
       //跳转到登录页面
       router.push('/users/login');
     }if(error.response.status===302){
+      //TODO token过期前端收到302未跳转
       //获取重定向的地址
       console.log(1,error.response.headers.location);
       router.push(error.response.headers.location);

@@ -98,14 +98,20 @@
           :label-width="formForPassword.formLabelWidth"
           prop="oldPassword"
         >
-          <el-input v-model="formForPassword.oldPassword"></el-input>
+          <el-input
+            v-model="formForPassword.oldPassword"
+            type="password"
+          ></el-input>
         </el-form-item>
         <el-form-item
           label="New password"
           :label-width="formForPassword.formLabelWidth"
           prop="newPassword"
         >
-          <el-input v-model="formForPassword.newPassword"></el-input>
+          <el-input
+            v-model="formForPassword.newPassword"
+            type="password"
+          ></el-input>
         </el-form-item>
         <el-form-item
           label="Repeat password"
@@ -114,6 +120,7 @@
         >
           <el-input
             v-model="formForPassword.repeatPasswordForModify"
+            type="password"
           ></el-input>
         </el-form-item>
       </el-form>
@@ -142,7 +149,6 @@ import {
 export default {
   name: "OperateProfile",
   mounted() {
-    console.log("OperateProfile mounted");
     if (this.$route.meta.type !== "create") this.getProfile();
   },
   data() {
@@ -198,17 +204,6 @@ export default {
         userName: "",
         password: "",
         repeatPassword: "",
-        // authority: "",
-        // authorityOptions: [
-        //   {
-        //     value: 1,
-        //     label: "Issuer",
-        //   },
-        //   {
-        //     value: 2,
-        //     label: "executor",
-        //   },
-        // ],
       },
       formForPassword: {
         dialogFormVisible: false,
@@ -262,13 +257,6 @@ export default {
             trigger: "blur",
           },
         ],
-        // authority: [
-        //   {
-        //     required: true,
-        //     message: "Authority is required",
-        //     trigger: "change",
-        //   },
-        // ],
       },
       rulesForPassword: {
         oldPassword: [
@@ -310,154 +298,137 @@ export default {
     },
   },
   methods: {
-    onSubmit() {
-      console.log("submit!");
-      this.$refs.form.validate((valid) => {
-        if (!valid) {
-          return;
-        } else if (this.type === "create") {
-          this.createUser();
-        } else if (this.type === "update") {
-          this.updateUser();
-        }
-      });
+    async onSubmit() {
+      let valid = await this.$refs.form.validate();
+      if (!valid) {
+        return;
+      } else if (this.type === "create") {
+        this.createUser();
+      } else if (this.type === "update") {
+        this.updateUser();
+      }
     },
-    onSubmitForPassword() {
-      console.log("submit!");
-      console.log(this.formForPassword);
-      this.$refs.formForPassword.validate((valid) => {
-        if (!valid) {
-          return;
-        } else {
-          this.modifyPassword();
-        }
-      });
+    async onSubmitForPassword() {
+      let valid = await this.$refs.formForPassword.validate();
+      if (!valid) {
+        return;
+      } else {
+        this.modifyPassword();
+      }
     },
-    modifyPassword() {
-      axios({
-            method: "put",
-            changeOrigin: "true",
-            url: modifyPasswordUrl,
-            transformRequest: [
-              function (data) {
-                // 对 data 进行任意转换处理
-                return qs.stringify(data);
-              },
-            ],
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
+    async modifyPassword() {
+      try {
+        let res = await axios({
+          method: "put",
+          changeOrigin: "true",
+          url: modifyPasswordUrl,
+          transformRequest: [
+            function (data) {
+              // 对 data 进行任意转换处理
+              return qs.stringify(data);
             },
-            data: {oldPassword:this.formForPassword.oldPassword, newPasswordthis:this.formForPassword.newPassword},
-          })
-            // axios
-            //   .put(modifyProfileUrl, this.form)
-            .then((res) => {
-              console.log(res);
-              if (res.data.code === 0) {
-                this.$message({
-                  message: "Modify success!",
-                  type: "success",
-                });
-                this.$router.go(-1);
-              } else {
-                this.$message({
-                  message: res.data.err,
-                  type: "error",
-                });
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-              this.$message({
-                message: "Modify failed",
-                type: "error",
-              });
-            });
+          ],
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          data: {
+            oldPassword: this.formForPassword.oldPassword,
+            newPassword: this.formForPassword.newPassword,
+          },
+        });
+        if (res.data.code === 0) {
+          this.$message({
+            message: "Modify success!",
+            type: "success",
+          });
+          this.$router.go(-1);
+        } else {
+          this.$message({
+            message: res.data.err,
+            type: "error",
+          });
+        }
+      } catch (error) {
+        this.$message({
+          message: "Modify failed",
+          type: "error",
+        });
+      }
     },
-    createUser() {
-      axios
-        .post(registerUrl, this.form)
-        .then((res) => {
-          console.log(res);
-          if (res.data.code === 0) {
-            this.$message({
-              message: "Register successfully!",
-              type: "success",
-            });
-
+    async createUser() {
+      try {
+        let res = await axios.post(registerUrl, this.form);
+        if (res.data.code === 0) {
+          this.$message({
+            message: "Register successfully!",
+            type: "success",
+          });
+          try {
             //询问是否立即直接登陆
-            this.$confirm("Do you want to login directly?", "Login", {
+            await this.$confirm("Do you want to login directly?", "Login", {
               confirmButtonText: "Login directly",
               cancelButtonText: "Cancel",
               type: "warning",
-            })
-              .then(() => {
-                console.log(this);
-                this.$store.dispatch("mConfig/setUserSession", res.data.data);
-                this.$router.push("/");
-              })
-              .catch(() => {
-                this.$router.push("/users/login");
-              });
-          } else {
-            this.$message({
-              message: res.data.err,
-              type: "error",
             });
+            this.$store.dispatch("mConfig/setUserSession", res.data.data);
+            this.$router.push("/");
+          } catch (error) {
+            this.$router.push("/users/login");
           }
-        })
-        .catch((error) => {
-          console.log(error);
+        } else {
           this.$message({
-            message: "Register failed!",
+            message: res.data.err,
             type: "error",
           });
+        }
+      } catch (error) {
+        this.$message({
+          message: "Register failed!",
+          type: "error",
         });
+      }
     },
-    updateUser() {
-      axios({
-        method: "put",
-        changeOrigin: "true",
-        url: modifyProfileUrl,
-        transformRequest: [
-          function (data) {
-            // 对 data 进行任意转换处理
-            return qs.stringify(data);
+    async updateUser() {
+      try {
+        let res = await axios({
+          method: "put",
+          changeOrigin: "true",
+          url: modifyProfileUrl,
+          transformRequest: [
+            function (data) {
+              // 对 data 进行任意转换处理
+              return qs.stringify(data);
+            },
+          ],
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
           },
-        ],
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        data: this.form,
-      })
-        // axios
-        //   .put(modifyProfileUrl, this.form)
-        .then((res) => {
-          console.log(res);
-          if (res.data.code === 0) {
-            this.$store.dispatch("mConfig/setUserUserInfo", res.data.data);
-            this.$message({
-              message: "Modify success!",
-              type: "success",
-            });
-            this.$router.go(-1);
-          } else {
-            this.$message({
-              message: res.data.err,
-              type: "error",
-            });
-          }
-        })
-        .catch((error) => {
-          console.log(error);
+          data: this.form,
+        });
+        if (res.data.code === 0) {
+          this.$store.dispatch("mConfig/setUserUserInfo", res.data.data);
           this.$message({
-            message: "Modify failed",
+            message: "Modify success!",
+            type: "success",
+          });
+          this.$router.go(-1);
+        } else {
+          this.$message({
+            message: res.data.err,
             type: "error",
           });
+        }
+      } catch (error) {
+        this.$message({
+          message: "Modify failed",
+          type: "error",
         });
+      }
     },
-    onClear() {
-      this.handleClose(() => {
+    async onClear() {
+      try {
+        await this.handleClose();
+      } catch {
         this.form = {
           title: "",
           toWhom: [],
@@ -468,14 +439,16 @@ export default {
           successful: false,
           // resource: '',
         };
-      });
+      }
     },
-    handleClose(done) {
-      this.$confirm("Are you sure clear all forms？")
-        .then((_) => {
-          done();
-        })
-        .catch((_) => {});
+    async handleClose(done) {
+      try {
+        await this.$confirm("Are you sure clear all forms？");
+        if (done) done();
+        else return Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
+      }
     },
     handleClearModifyPassword() {
       this.formForPassword = {
@@ -486,58 +459,51 @@ export default {
         formLabelWidth: "120px",
       };
     },
-    getProfile() {
-      axios
-        .post(userProfileUrl)
-        .then((res) => {
-          console.log(res);
+    async getProfile() {
+      try {
+        let res = await axios.post(userProfileUrl);
+        if (res.data.code === 0) {
+          this.form = res.data.data;
+        } else {
+          this.$message({
+            message: "Get profile failed" + (res.data.err || ""),
+            type: "error",
+          });
+        }
+      } catch (err) {
+        this.$message({
+          message: "Get profile failed",
+          type: "error",
+        });
+      }
+    },
+    async handleDeleteAccount() {
+      try {
+        await this.$confirm(
+          "Are you sure delete account？This action cannot be undone, your account will be deleted permanently!"
+        );
+        try {
+          let res = await axios.delete(deleteAccountUrl);
           if (res.data.code === 0) {
-            this.form = res.data.data;
+            this.$store.dispatch("mConfig/clearUserSession", {});
+            this.$message({
+              message: "Delete account successfully!",
+              type: "success",
+            });
+            this.$router.push("/users/login");
           } else {
             this.$message({
-              message: "Get profile failed" + (res.data.err || ""),
+              message: "Delete account failed!",
               type: "error",
             });
           }
-        })
-        .catch((err) => {
+        } catch (err) {
           this.$message({
-            message: "Get profile failed",
+            message: "Delete account failed!",
             type: "error",
           });
-        });
-    },
-    handleDeleteAccount() {
-      this.$confirm(
-        "Are you sure delete account？This action cannot be undone, your account will be deleted permanently!"
-      )
-        .then((_) => {
-          axios
-            .delete(deleteAccountUrl)
-            .then((res) => {
-              console.log(res);
-              if (res.data.code === 0) {
-                this.$store.dispatch("mConfig/clearUserSession", {});
-                this.$message({
-                  message: "Delete account successfully!",
-                  type: "success",
-                });
-                this.$router.push("/users/login");
-              } else {
-                this.$message({
-                  message: "Delete account failed!",
-                  type: "error",
-                });
-              }
-            })
-            .catch((err) => {
-              this.$message({
-                message: "Delete account failed!",
-                type: "error",
-              });
-            });
-        })
-        .catch((_) => {});
+        }
+      } catch (err) {}
     },
   },
 };
