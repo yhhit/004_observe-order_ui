@@ -356,7 +356,7 @@ export default {
         if (res.data.code === 0) {
           this.listData.ordersData = res.data.data.ordersData;
         } else {
-          this.$message.error(res.data.err);
+          this.$message.error(res.data.msg);
         }
       } catch (error) {
         this.$message.error("Failed to get order list");

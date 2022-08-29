@@ -338,7 +338,7 @@ export default {
           this.$router.go(-1);
         } else {
           this.$message({
-            message: res.data.err,
+            message: res.data.msg,
             type: "error",
           });
         }
@@ -371,7 +371,7 @@ export default {
           }
         } else {
           this.$message({
-            message: res.data.err,
+            message: res.data.msg,
             type: "error",
           });
         }
@@ -402,7 +402,7 @@ export default {
           this.$router.go(-1);
         } else {
           this.$message({
-            message: res.data.err,
+            message: res.data.msg,
             type: "error",
           });
         }
@@ -454,7 +454,7 @@ export default {
           this.form = res.data.data;
         } else {
           this.$message({
-            message: "Get profile failed" + (res.data.err || ""),
+            message: "Get profile failed" + (res.data.msg || ""),
             type: "error",
           });
         }

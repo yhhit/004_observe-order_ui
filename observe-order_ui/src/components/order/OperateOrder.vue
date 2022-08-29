@@ -183,7 +183,7 @@ export default {
       if (res.data.code === 0) {
         this.form.toWhomOptions = res.data.data;
       } else {
-        this.$message.error(res.data.err);
+        this.$message.error(res.data.msg);
       }
     } catch (err) {
       this.$message.error(err);
@@ -227,7 +227,7 @@ export default {
           this.$router.go(0);
         } else {
           this.$message({
-            message: res.data.err,
+            message: res.data.msg,
             type: "error",
           });
         }

@@ -32,7 +32,7 @@ export default {
           });
             this.draw()
         }else{
-            this.$message.error(res.data.err||"Get data error");
+            this.$message.error(res.data.msg||"Get data error");
         }
     }catch(err){
       this.$message.error(err);

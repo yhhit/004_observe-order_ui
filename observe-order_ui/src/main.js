@@ -31,11 +31,11 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   response => {
+    console.log(111,response)
     return response;
   },
   error => {
     console.log(111,error)
-    
     if (error.response.status === 401) {
      //输出授权失败错误信息
       console.log('授权失败');

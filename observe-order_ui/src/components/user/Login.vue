@@ -120,7 +120,7 @@ export default {
           this.$router.push("/");
         } else {
           this.$message.error(
-            "Login failed, " + (res.data.err || "network error!")
+            "Login failed, " + (res.data.msg || "network error!")
           );
         }
       } catch (error) {
