@@ -31,29 +31,21 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   response => {
-    console.log(111,response)
     return response;
   },
   error => {
-    console.log(111,error)
     if (error.response.status === 401) {
      //输出授权失败错误信息
       console.log('授权失败');
       //清除token
       localStorage.removeItem('token');
       //跳转到登录页面
-      router.push('/users/login');
-    }if(error.response.status===302){
-      //TODO token过期前端收到302未跳转
-      //获取重定向的地址
-      console.log(1,error.response.headers.location);
-      router.push(error.response.headers.location);
-    } else {
+      router.push(`/users/login?source=${encodeURIComponent(error.response.headers['source-url'])}`);
+    }else {
      //输出其他错误信息
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
-      
     }
     return Promise.reject(error);
   }
