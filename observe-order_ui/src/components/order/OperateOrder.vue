@@ -213,14 +213,8 @@ export default {
           method: "post",
           changeOrigin: "true",
           url: issueOrderUrl,
-          transformRequest: [
-            function (data) {
-              // 对 data 进行任意转换处理
-              return qs.stringify(data);
-            },
-          ],
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
           data: this.form,
         });

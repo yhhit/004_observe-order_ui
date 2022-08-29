@@ -23,9 +23,6 @@ axios.interceptors.request.use(
     if (localStorage.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
       config.headers.Authorization = `Bearer ${localStorage.token}`;
     }
-
-    config.headers['Content-Type']= 'application/x-www-form-urlencoded'
-
     return config;
   },
   err => {

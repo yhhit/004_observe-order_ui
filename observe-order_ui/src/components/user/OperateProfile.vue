@@ -322,14 +322,8 @@ export default {
           method: "put",
           changeOrigin: "true",
           url: modifyPasswordUrl,
-          transformRequest: [
-            function (data) {
-              // 对 data 进行任意转换处理
-              return qs.stringify(data);
-            },
-          ],
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
           data: {
             oldPassword: this.formForPassword.oldPassword,
@@ -394,14 +388,8 @@ export default {
           method: "put",
           changeOrigin: "true",
           url: modifyProfileUrl,
-          transformRequest: [
-            function (data) {
-              // 对 data 进行任意转换处理
-              return qs.stringify(data);
-            },
-          ],
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
           data: this.form,
         });
@@ -461,7 +449,7 @@ export default {
     },
     async getProfile() {
       try {
-        let res = await axios.post(userProfileUrl);
+        let res = await axios.get(userProfileUrl);
         if (res.data.code === 0) {
           this.form = res.data.data;
         } else {
