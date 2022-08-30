@@ -112,12 +112,20 @@ export default {
       let self = this;
       this.loading = true;
       try {
+        this.model.source=`${this.$route.query.source}`
         let res = await axios.post(loginUrl, this.model);
         if (res.data.code === 0) {
           this.$store.dispatch("mConfig/setUserSession", res.data.data);
           this.$message.success("Login successfull");
           await setTimeout(null, 1000);
-          this.$router.push("/");
+          const redirectURL=res.data.data.redirectURL;
+          if(redirectURL){
+            window.location.href=redirectURL;
+          }else{
+            this.$router.push("/");
+          }
+          
+          
         } else {
           this.$message.error(
             "Login failed, " + (res.data.msg || "network error!")

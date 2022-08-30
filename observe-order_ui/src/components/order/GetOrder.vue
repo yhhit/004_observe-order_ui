@@ -6,35 +6,31 @@
         :data="listData.ordersData"
         tooltip-effect="dark"
         style="width: 100%"
-        @selection-change="handleSelectionChange"
-      >
+        @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column
           prop="title"
           label="Title"
           width="120"
-          show-overflow-tooltip
-        >
+          show-overflow-tooltip>
         </el-table-column>
         <el-table-column
           prop="issuer"
           label="Issuer"
           width="120"
-          show-overflow-tooltip
-        >
+          show-overflow-tooltip>
         </el-table-column>
         <el-table-column
           prop="toWhom"
           label="To Whom"
           width="120"
-          show-overflow-tooltip
-        >
+          show-overflow-tooltip>
         </el-table-column>
         <el-table-column label="Start And End Date Time" width="310">
-          <template slot-scope="scope"
-            >{{ getLocalTime(scope.row.startAndEndDateTime[0]) }} to
-            {{ getLocalTime(scope.row.startAndEndDateTime[1]) }}</template
-          >
+          <template slot-scope="scope">
+            {{ getLocalTime(scope.row.startAndEndDateTime[0]) }} to
+            {{ getLocalTime(scope.row.startAndEndDateTime[1]) }}
+          </template>
         </el-table-column>
         <el-table-column label="Cycle" width="240" show-overflow-tooltip>
           <template slot-scope="scope">{{
@@ -46,8 +42,7 @@
           prop="content"
           label=""
           width="55"
-          show-overflow-tooltip
-        >
+          show-overflow-tooltip>
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
               <el-form-item label="content">
@@ -60,8 +55,7 @@
           prop="content"
           label="Content"
           width="240"
-          show-overflow-tooltip
-        >
+          show-overflow-tooltip>
         </el-table-column>
         <el-table-column label="Successful" width="100" show-overflow-tooltip>
           <template slot-scope="scope">
@@ -69,8 +63,7 @@
               v-bind:value="scope.row.successful"
               disabled
               active-color="#13ce66"
-              inactive-color="#ff4949"
-            >
+              inactive-color="#ff4949">
             </el-switch>
           </template>
         </el-table-column>
@@ -80,8 +73,7 @@
               v-bind:value="scope.row.executed"
               disabled
               active-color="#13ce66"
-              inactive-color="#ff4949"
-            >
+              inactive-color="#ff4949">
             </el-switch>
           </template>
         </el-table-column>
@@ -89,44 +81,32 @@
           prop="operation"
           label="Operation"
           width="300"
-          show-overflow-tooltip
-        >
+          show-overflow-tooltip>
           <template slot-scope="scope">
             <!-- <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">Edit</el-button> -->
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)">Edit</el-button> -->
             <el-button
               size="mini"
               type="danger"
-              @click="handleSuccess(scope.$index, scope.row)"
-              >Success</el-button
-            >
+              @click="handleSuccess(scope.$index, scope.row)">Success</el-button>
             <el-button
               size="mini"
               type="danger"
               @click="handleDefeat(scope.$index, scope.row)"
-              >Defeat</el-button
-            >
+              >Defeat</el-button>
             <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-              >Delete</el-button
-            >
+              @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
       <p></p>
       <div class="block">
-        <el-button type="primary" size="mini" @click="onSuccess()"
-          >Success</el-button
-        >
-        <el-button type="primary" size="mini" @click="onDefeat()"
-          >Defeat</el-button
-        >
-        <el-button type="danger" size="mini" @click="onDelete"
-          >Delete selected</el-button
-        >
+        <el-button type="primary" size="mini" @click="onSuccess()">Success</el-button>
+        <el-button type="primary" size="mini" @click="onDefeat()">Defeat</el-button>
+        <el-button type="danger" size="mini" @click="onDelete">Delete selected</el-button>
 
         <el-pagination
           style="display: inline-block"
@@ -136,8 +116,7 @@
           :page-sizes="[5, 10, 50, 100]"
           :page-size="listData.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="listData.ordersData.length"
-        >
+          :total="listData.total">
         </el-pagination>
       </div>
       <!-- <div style="margin-top: 20px">
@@ -339,11 +318,12 @@ export default {
       this.listData.multipleSelection = val;
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-      this.pageSize = val;
+      this.listData.pageSize=val;
+      this.getOrderList()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.listData.currentPage=val,
+      this.getOrderList()
     },
     async getOrderList() {
       try {
@@ -354,6 +334,7 @@ export default {
           },
         });
         if (res.data.code === 0) {
+          this.listData.total=res.data.data.total;
           this.listData.ordersData = res.data.data.ordersData;
         } else {
           this.$message.error(res.data.msg);

@@ -23,6 +23,7 @@ axios.interceptors.request.use(
     if (localStorage.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
       config.headers.Authorization = `Bearer ${localStorage.token}`;
     }
+    config.headers[`source`]=window.location.href;
     return config;
   },
   err => {
@@ -40,7 +41,7 @@ axios.interceptors.response.use(
       //清除token
       localStorage.removeItem('token');
       //跳转到登录页面
-      router.push(`/users/login?source=${encodeURIComponent(error.response.headers['source-url'])}`);
+      router.push(`/users/login?source=${encodeURIComponent(error.response.headers['source'])}`);
     }else {
      //输出其他错误信息
       console.log(error.response.data);
