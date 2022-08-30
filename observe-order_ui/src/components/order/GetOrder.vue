@@ -70,7 +70,7 @@
         <el-table-column label="Executed" width="100" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-switch
-              v-bind:value="scope.row.executed"
+              v-bind:value="scope.row.done"
               disabled
               active-color="#13ce66"
               inactive-color="#ff4949">
@@ -128,10 +128,11 @@
 
 <script>
 import axios from "axios";
+import Url from "url";
 import { getLocalTime } from "../utils";
 import {
   orderListUrl,
-  deleteOrderUrl,
+  deleteOrdersUrl,
   orderToSuccessfulUrl,
   orderToDefeatUrl,
 } from "../const/api";
@@ -182,9 +183,7 @@ export default {
       });
       try {
         let res = await axios.put(orderToSuccessfulUrl, {
-          data: {
-            id: ids,
-          },
+          data: ids,
         });
 
         if (res.data.code == 0) {
@@ -207,17 +206,18 @@ export default {
         });
       }
     },
-    async defeatItem(rows) {
+    async defeatItem(rows,status) {
       //从rows中取出id组成一个新数组
       let ids = [];
       rows.forEach((row) => {
         ids.push(row.id);
       });
       try {
-        let res = await axios.put(orderToDefeatUrl, {
-          data: {
-            id: ids,
-          },
+        if(status==undefined)
+          throw new Error("status is null")
+        const url=Url.parse(orderToDefeatUrl).resolve(`${status}`)
+        let res = await axios.put(url, {
+          data: ids,
         });
         if (res.data.code == 0) {
           this.$message({
@@ -247,10 +247,8 @@ export default {
         ids.push(row.id);
       });
       try {
-        let res = await axios.delete(deleteOrderUrl, {
-          data: {
-            id: ids,
-          },
+        let res = await axios.delete(deleteOrdersUrl, {
+          data: ids,
         });
         if (res.data.code == 0) {
           this.$message({
@@ -279,7 +277,7 @@ export default {
           message: "Please select the order",
           type: "error",
         });
-        return;
+        throw new Error("Please select the order");
       }
       try {
         await this.$confirm(tip, "Confirm", {
@@ -294,6 +292,7 @@ export default {
           type: "info",
           message: "Cancel",
         });
+        throw new Error()
       }
     },
     async onDelete() {

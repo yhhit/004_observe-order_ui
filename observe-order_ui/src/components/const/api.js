@@ -1,8 +1,8 @@
 exports.loginUrl=`http://localhost:8080/api/sso/v1/users/login`
 exports.orderListUrl=`http://localhost:8080/api/backend/v1/orders/orders`
-exports.deleteOrderUrl=`https://www.fastmock.site/mock/d41ed48658f9b31c80ad77ef263d6d71/api/api/v1/orders/order`
-exports.orderToSuccessfulUrl=`https://www.fastmock.site/mock/d41ed48658f9b31c80ad77ef263d6d71/api/orders/success`
-exports.orderToDefeatUrl=`https://www.fastmock.site/mock/d41ed48658f9b31c80ad77ef263d6d71/api/orders/defeat`
+exports.deleteOrdersUrl=`http://localhost:8080/api/backend/v1/orders/orders`
+exports.orderToSuccessfulUrl=`http://localhost:8080/api/backend/orders/success/:id`
+exports.orderToDefeatUrl=`http://localhost:8080/api/backend/orders/defeat/:id`
 exports.registerUrl=`http://localhost:8080/api/sso/v1/users/register`
 exports.modifyProfileUrl=`http://localhost:8080/api/backend/v1/users/profile`
 exports.modifyPasswordUrl=`http://localhost:8080/api/backend/v1/users/profile/password`
