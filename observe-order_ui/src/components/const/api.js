@@ -1,8 +1,8 @@
 exports.loginUrl=`http://localhost:8080/api/sso/v1/users/login`
 exports.orderListUrl=`http://localhost:8080/api/backend/v1/orders/orders`
 exports.deleteOrdersUrl=`http://localhost:8080/api/backend/v1/orders/orders`
-exports.orderToSuccessfulUrl=`http://localhost:8080/api/backend/orders/success/:id`
-exports.orderToDefeatUrl=`http://localhost:8080/api/backend/orders/defeat/:id`
+exports.updateOrdersSuccessfulStatusUrl=`http://localhost:8080/api/backend/v1/orders/success/:status`
+exports.updateOrdersDoneStatusUrl=`http://localhost:8080/api/backend/v1/orders/done/:status`
 exports.registerUrl=`http://localhost:8080/api/sso/v1/users/register`
 exports.modifyProfileUrl=`http://localhost:8080/api/backend/v1/users/profile`
 exports.modifyPasswordUrl=`http://localhost:8080/api/backend/v1/users/profile/password`

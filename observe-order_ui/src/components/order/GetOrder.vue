@@ -6,25 +6,29 @@
         :data="listData.ordersData"
         tooltip-effect="dark"
         style="width: 100%"
-        @selection-change="handleSelectionChange">
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column
           prop="title"
           label="Title"
           width="120"
-          show-overflow-tooltip>
+          show-overflow-tooltip
+        >
         </el-table-column>
         <el-table-column
           prop="issuer"
           label="Issuer"
           width="120"
-          show-overflow-tooltip>
+          show-overflow-tooltip
+        >
         </el-table-column>
         <el-table-column
           prop="toWhom"
           label="To Whom"
           width="120"
-          show-overflow-tooltip>
+          show-overflow-tooltip
+        >
         </el-table-column>
         <el-table-column label="Start And End Date Time" width="310">
           <template slot-scope="scope">
@@ -42,7 +46,8 @@
           prop="content"
           label=""
           width="55"
-          show-overflow-tooltip>
+          show-overflow-tooltip
+        >
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
               <el-form-item label="content">
@@ -55,25 +60,28 @@
           prop="content"
           label="Content"
           width="240"
-          show-overflow-tooltip>
+          show-overflow-tooltip
+        >
         </el-table-column>
         <el-table-column label="Successful" width="100" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-switch
+              @change="handleSuccessfulStatusChange(scope.row)"
               v-bind:value="scope.row.successful"
-              disabled
               active-color="#13ce66"
-              inactive-color="#ff4949">
+              inactive-color="#ff4949"
+            >
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="Executed" width="100" show-overflow-tooltip>
+        <el-table-column label="Done" width="100" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-switch
+              @change="handleDonelStatusChange(scope.row)"
               v-bind:value="scope.row.done"
-              disabled
               active-color="#13ce66"
-              inactive-color="#ff4949">
+              inactive-color="#ff4949"
+            >
             </el-switch>
           </template>
         </el-table-column>
@@ -81,33 +89,35 @@
           prop="operation"
           label="Operation"
           width="300"
-          show-overflow-tooltip>
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
-            <!-- <el-button
-              size="mini"
-              @click="handleEdit(scope.$index, scope.row)">Edit</el-button> -->
             <el-button
               size="mini"
               type="danger"
-              @click="handleSuccess(scope.$index, scope.row)">Success</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDefeat(scope.$index, scope.row)"
-              >Defeat</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+              @click="handleDelete(scope.$index, scope.row)"
+              >Delete</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
       <p></p>
       <div class="block">
-        <el-button type="primary" size="mini" @click="onSuccess()">Success</el-button>
-        <el-button type="primary" size="mini" @click="onDefeat()">Defeat</el-button>
-        <el-button type="danger" size="mini" @click="onDelete">Delete selected</el-button>
-
+        <el-button type="primary" size="mini" @click="onSuccess()"
+          >Success</el-button
+        >
+        <el-button type="primary" size="mini" @click="onDefeat()"
+          >Defeat</el-button
+        >
+        <el-button type="primary" size="mini" @click="onDone()"
+          >Done</el-button
+        >
+        <el-button type="primary" size="mini" @click="onUndone()"
+          >Undone</el-button
+        >
+        <el-button type="danger" size="mini" @click="onDelete"
+          >Delete selected</el-button
+        >
         <el-pagination
           style="display: inline-block"
           @size-change="handleSizeChange"
@@ -116,7 +126,8 @@
           :page-sizes="[5, 10, 50, 100]"
           :page-size="listData.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="listData.total">
+          :total="listData.total"
+        >
         </el-pagination>
       </div>
       <!-- <div style="margin-top: 20px">
@@ -133,8 +144,8 @@ import { getLocalTime } from "../utils";
 import {
   orderListUrl,
   deleteOrdersUrl,
-  orderToSuccessfulUrl,
-  orderToDefeatUrl,
+  updateOrdersSuccessfulStatusUrl,
+  updateOrdersDoneStatusUrl,
 } from "../const/api";
 export default {
   name: "GetOrder",
@@ -163,62 +174,40 @@ export default {
     //     this.$refs.multipleTable.clearSelection();
     //   }
     // },
-    handleDelete(index, row) {
+    async handleDelete(index, row) {
       console.log(index, row);
       this.deleteItem([row]);
     },
-    handleDefeat(index, row) {
-      console.log(index, row);
-      this.defeatItem([row]);
+    async handleSuccessfulStatusChange(row){
+      await this.modifyItemStatus(updateOrdersSuccessfulStatusUrl, [row], !row.successful);
     },
-    handleSuccess(index, row) {
-      console.log(index, row);
-      this.successItem([row]);
+    async handleDonelStatusChange(row){
+      await this.modifyItemStatus(updateOrdersDoneStatusUrl, [row], !row.done);
     },
     async successItem(rows) {
-      //从rows中取出id组成一个新数组
-      let ids = [];
-      rows.forEach((row) => {
-        ids.push(row.id);
-      });
-      try {
-        let res = await axios.put(orderToSuccessfulUrl, {
-          data: ids,
-        });
-
-        if (res.data.code == 0) {
-          this.$message({
-            message: "Successful",
-            type: "success",
-          });
-        } else {
-          this.$message({
-            message: "Failed",
-            type: "error",
-          });
-        }
-        this.getOrderList();
-        this.$refs.multipleTable.clearSelection();
-      } catch (err) {
-        this.$message({
-          message: "Failed",
-          type: "error",
-        });
-      }
+      return await this.modifyItemStatus(updateOrdersSuccessfulStatusUrl, rows, true);
     },
-    async defeatItem(rows,status) {
+    async defeatItem(rows) {
+      return await this.modifyItemStatus(updateOrdersSuccessfulStatusUrl, rows, false);
+    },
+    async doneItem(rows) {
+      return await this.modifyItemStatus(updateOrdersDoneStatusUrl, rows, true);
+    },
+    async undoneItem(rows) {
+      return await this.modifyItemStatus(updateOrdersDoneStatusUrl, rows, false);
+    },
+    async modifyItemStatus(orderStatusUrl, rows, status) {
       //从rows中取出id组成一个新数组
       let ids = [];
+      debugger
       rows.forEach((row) => {
         ids.push(row.id);
       });
       try {
-        if(status==undefined)
-          throw new Error("status is null")
-        const url=Url.parse(orderToDefeatUrl).resolve(`${status}`)
-        let res = await axios.put(url, {
-          data: ids,
-        });
+        if (status == undefined) throw new Error("status is null");
+        const url = Url.parse(orderStatusUrl).resolve(`${status}`);
+        //put请求很特殊，不需要{data:ids}这种形式，直接传递要修改的数据否则会被多嵌套一层data
+        let res = await axios.put(url, ids);
         if (res.data.code == 0) {
           this.$message({
             message: "Successful",
@@ -292,7 +281,7 @@ export default {
           type: "info",
           message: "Cancel",
         });
-        throw new Error()
+        throw new Error();
       }
     },
     async onDelete() {
@@ -303,7 +292,7 @@ export default {
     },
     async onDefeat() {
       await this.checkSelectAndConfirm(
-        "Are you sure to set the selected order to failure?"
+        "Are you sure to set the selected order to defeat?"
       );
       this.defeatItem(this.listData.multipleSelection);
     },
@@ -313,16 +302,27 @@ export default {
       );
       this.successItem(this.listData.multipleSelection);
     },
+    async onDone() {
+      await this.checkSelectAndConfirm(
+        "Are you sure to set the selected order to done?"
+      );
+      this.doneItem(this.listData.multipleSelection);
+    },
+    async onUndone() {
+      await this.checkSelectAndConfirm(
+        "Are you sure to set the selected order to undone?"
+      );
+      this.undoneItem(this.listData.multipleSelection);
+    },
     handleSelectionChange(val) {
       this.listData.multipleSelection = val;
     },
     handleSizeChange(val) {
-      this.listData.pageSize=val;
-      this.getOrderList()
+      this.listData.pageSize = val;
+      this.getOrderList();
     },
     handleCurrentChange(val) {
-      this.listData.currentPage=val,
-      this.getOrderList()
+      (this.listData.currentPage = val), this.getOrderList();
     },
     async getOrderList() {
       try {
@@ -333,7 +333,7 @@ export default {
           },
         });
         if (res.data.code === 0) {
-          this.listData.total=res.data.data.total;
+          this.listData.total = res.data.data.total;
           this.listData.ordersData = res.data.data.ordersData;
         } else {
           this.$message.error(res.data.msg);
