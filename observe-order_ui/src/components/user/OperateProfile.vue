@@ -138,7 +138,7 @@
 
 <script>
 import axios from "axios";
-import qs from "qs";
+import { encryptPassword } from "@/components/utils"
 import {
   registerUrl,
   modifyProfileUrl,
@@ -317,6 +317,9 @@ export default {
       }
     },
     async modifyPassword() {
+      const formForPassword=JSON.parse(JSON.stringify(this.formForPassword));
+      formForPassword.oldPassword=encryptPassword(formForPassword.oldPassword);
+      formForPassword.repeatPasswordForModify=formForPassword.newPassword=encryptPassword(formForPassword.newPassword);
       try {
         let res = await axios({
           method: "put",
@@ -326,8 +329,8 @@ export default {
             "Content-Type": "application/json",
           },
           data: {
-            oldPassword: this.formForPassword.oldPassword,
-            newPassword: this.formForPassword.newPassword,
+            oldPassword: formForPassword.oldPassword,
+            newPassword: formForPassword.newPassword,
           },
         });
         if (res.data.code === 0) {
@@ -351,7 +354,9 @@ export default {
     },
     async createUser() {
       try {
-        let res = await axios.post(registerUrl, this.form);
+        const form=JSON.parse(JSON.stringify(this.form));
+        form.repeatPassword=form.password=encryptPassword(form.password)
+        let res = await axios.post(registerUrl, form);
         if (res.data.code === 0) {
           this.$message({
             message: "Register successfully!",

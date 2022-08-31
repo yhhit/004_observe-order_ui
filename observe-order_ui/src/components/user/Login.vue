@@ -61,6 +61,7 @@
 <script>
 import axios from "axios";
 import { loginUrl } from "../const/api.js";
+import { encryptPassword } from "../utils"
 export default {
   name: "Login-component",
   mounted: function () {},
@@ -113,7 +114,9 @@ export default {
       this.loading = true;
       try {
         this.model.source=`${this.$route.query.source}`
-        let res = await axios.post(loginUrl, this.model);
+        const model=JSON.parse(JSON.stringify(this.model));
+        model.password=encryptPassword(model.password)
+        let res = await axios.post(loginUrl, model);
         if (res.data.code === 0) {
           this.$store.dispatch("mConfig/setUserSession", res.data.data);
           this.$message.success("Login successfull");

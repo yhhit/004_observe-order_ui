@@ -18,25 +18,25 @@ export default {
     }
   },
   async mounted() {
-    debugger
-    console.log(this)
-    try{
-        let res=await axios.get(dataStatisticsUrl)
-        console.log(res)
-        if(res.data.code===0){
-          //从res.data数组中取出每个对象的属性，并赋值给yAxis对象
-          //遍历res.data.data
-          res.data.data.forEach((item)=>{
-            this.yAxis.CS_AKS.push([item.createdAt,item.result.CS_AKS])
-            this.yAxis.DFT_ON_PRIMISE.push([item.createdAt,item.result.DFT_ON_PRIMISE])
-          });
-            this.draw()
-        }else{
-            this.$message.error(res.data.msg||"Get data error");
-        }
-    }catch(err){
-      this.$message.error(err);
-    }
+
+    // console.log(this)
+    // try{
+    //     let res=await axios.get(dataStatisticsUrl)
+    //     console.log(res)
+    //     if(res.data.code===0){
+    //       //从res.data数组中取出每个对象的属性，并赋值给yAxis对象
+    //       //遍历res.data.data
+    //       res.data.data.forEach((item)=>{
+    //         this.yAxis.CS_AKS.push([item.createdAt,item.result.CS_AKS])
+    //         this.yAxis.DFT_ON_PRIMISE.push([item.createdAt,item.result.DFT_ON_PRIMISE])
+    //       });
+    //         this.draw()
+    //     }else{
+    //         this.$message.error(res.data.msg||"Get data error");
+    //     }
+    // }catch(err){
+    //   this.$message.error(err);
+    // }
   },
   methods:{
     draw(){
