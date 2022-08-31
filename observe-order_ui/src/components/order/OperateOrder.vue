@@ -92,15 +92,13 @@
         :disabled="type === 'read'"
       ></el-input>
     </el-form-item>
+    <el-form-item label="Successful">
+      <el-switch v-model="form.successful" :disabled="type === 'read'"></el-switch>
+    </el-form-item>
     <el-form-item label="Done">
       <el-switch v-model="form.done" :disabled="type === 'read'"></el-switch>
     </el-form-item>
-    <el-form-item label="Successful">
-      <el-switch
-        v-model="form.successful"
-        :disabled="type === 'read'"
-      ></el-switch>
-    </el-form-item>
+
     <!-- <el-form-item label="特殊资源">
     <el-radio-group v-model="form.resource">
       <el-radio label="线上品牌商赞助"></el-radio>

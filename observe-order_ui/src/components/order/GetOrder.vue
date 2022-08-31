@@ -17,13 +17,15 @@
         >
         </el-table-column>
         <el-table-column
-          prop="issuer"
           label="Issuer"
-          width="120"
+          width="240"
           show-overflow-tooltip
         >
+        <template slot-scope="scope">
+          {{scope.row.issuerNickName}}@{{scope.row.issuerUserName}}
+        </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="toWhom"
           label="To Whom"
           width="120"
@@ -35,7 +37,7 @@
             {{ getLocalTime(scope.row.startAndEndDateTime[0]) }} to
             {{ getLocalTime(scope.row.startAndEndDateTime[1]) }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="Cycle" width="240" show-overflow-tooltip>
           <template slot-scope="scope">{{
             convertCycleArrToText(scope.row.cycle)
@@ -88,7 +90,7 @@
         <el-table-column
           prop="operation"
           label="Operation"
-          width="300"
+          width="120"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
